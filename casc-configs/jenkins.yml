@@ -25,5 +25,5 @@ credentials:
         - aws:
             scope: GLOBAL
             description: "jenkins-ecr-role"
-            iamExternalId: "arn:aws:iam::507676015690:role/hillel/jenkins-ecr-iam-role"
+            iamRoleArn: "arn:aws:iam::507676015690:role/hillel/jenkins-ecr-iam-role"
             id: "jenkins-ecr-role"
