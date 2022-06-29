@@ -39,6 +39,11 @@ resource "aws_iam_role_policy_attachment" "jenkins_ecr" {
     policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "jenkins" {
+    role = aws_iam_role.jenkins.name
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
 output "jenkins_ecr_role_arn" {
     value = aws_iam_role.jenkins_ecr.arn
     sensitive = false

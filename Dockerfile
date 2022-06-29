@@ -13,3 +13,5 @@ RUN apt-get update && apt-get install -y lsb-release \
 USER jenkins
 COPY ./plugins.txt ./plugins.txt
 RUN jenkins-plugin-cli --plugin-file ./plugins.txt
+COPY ./casc-configs /casc-configs/
+ENV CASC_JENKINS_CONFIG=/casc-configs

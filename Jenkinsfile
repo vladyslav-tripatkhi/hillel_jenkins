@@ -1,4 +1,4 @@
-def image_name = "example-app"
+def image_name = "jenkins"
 
 pipeline {
     agent any
@@ -32,7 +32,7 @@ pipeline {
         stage("Pre-check") {
             steps {
                 script {
-                    image_name = "example_app"
+                    image_name = "jenkins"
                     if (!params.IMAGE_NAME.isEmpty()) {
                         image_name = params.IMAGE_NAME
                     }
@@ -46,10 +46,12 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[
                         name: '*/master'
-                    ]],
+                    ]], 
                     userRemoteConfigs: [[
-                        url: 'https://github.com/vladyslav-tripatkhi/react-redux-realworld-example-app.git'
-                    ]]])
+                        credentialsId: 'ssh-test',
+                        url: 'git@github.com:vladyslav-tripatkhi/hillel_jenkins.git'
+                    ]]
+                ])
             }
         }
 
@@ -59,7 +61,7 @@ pipeline {
                 // sh "docker build -t ${params.IMAGE_NAME}:${env.BUILD_ID} ."
                 script {
                     my_tmp_var = "Hello! ${env.MY_ENV}"
-                    docker.build("${env.REGISTRY_NAME}/${image_name}:${env.BUILD_ID}")
+                    docker.build("${env.REGISTRY_NAME}/${image_name}:lts-slim")
                 }
 
                 echo "Hello from ${my_tmp_var}"
@@ -67,31 +69,11 @@ pipeline {
         }
 
         stage("Push") {
-            parallel {
-                stage("Push to us-east-1") {
-                    steps {
-                        script {
-                            def region = "us-east-1"
-                            echo "Deploying ${env.MY_ENV} to ${region}"
-                            def registry_name = "${params.AWS_ACCOUNT}.dkr.ecr.${region}.amazonaws.com"
-                            docker.withRegistry("https://${registry_name}", "ecr:${region}:jenkins-ecr-role") {
-                                docker.image("${registry_name}/${image_name}:${env.BUILD_ID}").push()
-                            }
-                        }
-                    }
-                }
-
-                stage("Push to us-west-1") {
-                    steps {
-                        script {
-                            def region = "us-west-1"
-                            echo "Deploying ${env.MY_ENV} to ${region}"
-                            def registry_name = "${params.AWS_ACCOUNT}.dkr.ecr.${region}.amazonaws.com"
-                            sh "docker tag ${env.REGISTRY_NAME}/${image_name}:${env.BUILD_ID} ${registry_name}/${image_name}:${env.BUILD_ID}"
-                            docker.withRegistry("https://${registry_name}", "ecr:${region}:jenkins-ecr-role") {
-                                docker.image("${registry_name}/${image_name}:${env.BUILD_ID}").push()
-                            }
-                        }
+            steps {
+                script {
+                    echo "Deploying ${env.MY_ENV} to us-east-1"
+                    docker.withRegistry("https://${env.REGISTRY_NAME}", "ecr:us-east-1:jenkins-ecr-role") {
+                        docker.image("${env.REGISTRY_NAME}/${image_name}:lts-slim").push()
                     }
                 }
             }
