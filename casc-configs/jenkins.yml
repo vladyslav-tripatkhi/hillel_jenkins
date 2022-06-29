@@ -22,3 +22,8 @@ credentials:
             accessKey: "AWS_ACCESS_KEY"
             secretKey: "AWS_SECRET_ACCESS_KEY"
             description: "AWS Credentials"
+        - aws:
+            scope: GLOBAL
+            description: "jenkins-ecr-role"
+            iamExternalId: "arn:aws:iam::507676015690:role/hillel/jenkins-ecr-iam-role"
+            id: "jenkins-ecr-role"
