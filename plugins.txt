@@ -2,3 +2,5 @@ blueocean:1.25.5
 docker-workflow:1.28
 amazon-ecr:1.73.v741d474abe74
 configuration-as-code
+terraform:1.0.10
+docker-plugin:1.2.9

@@ -30,7 +30,7 @@ docker run \
   --publish 50000:50000 \
   --volume jenkins-data:/var/jenkins_home \
   --volume jenkins-docker-certs:/certs/client:ro \
-  my-jenkins:lts-slim
+  507676015690.dkr.ecr.us-east-1.amazonaws.com/jenkins:lts-slim
 
 ## Cleanup
 docker rm -f `docker ps -aq`
@@ -38,6 +38,6 @@ docker volume prune -f
 docker network prune -f
 
 ## Useful links
-* [Snippet generator](https://www.jenkins.io/doc/book/pipeline/getting-started/#snippet-generator)
+* [Snippet generator](https://www.jenkins.io/doc/book/pipeline/getting-started/snippet-generator)
 * Глобальные переменные – <YOUR_JENKINS_URL>/pipeline-syntax/globals
 * Declarative Directive Generator – <YOUR_JENKINS_URL>/directive-generator

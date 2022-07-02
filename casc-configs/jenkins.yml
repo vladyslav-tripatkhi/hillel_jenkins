@@ -1,29 +1,61 @@
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "somethingsecret"
+          name: "Admin"
+          description: "Superwoman"
+  authorizationStrategy: loggedInUsersCanDoAnything
   globalNodeProperties:
-  - envVars:
-      env:
-      - key: VARIABLE1
-        value: foo
-      - key: VARIABLE2
-        value: bar
+    - envVars:
+        env:
+        - key: VARIABLE1
+          value: foo
+  clouds:
+    - docker:
+        name: local-docker
+        dockerApi:
+          connectTimeout: 60
+          readTimeout: 60
+          dockerHost:
+            credentialsId: docker-local-cert
+            uri: tcp://docker:2376
+        templates:
+          - connector: attach
+            dockerTemplateBase:
+              environment:
+                - "DIND=true"
+              image: "odavid/jenkins-jnlp-slave"
+              privileged: true
+            labelString: "docker-local-slave"
+            name: "docker-local-dind"
+            pullStrategy: PULL_ALWAYS
+            pullTimeout: 300
+tool:
+  terraform:
+    installations:
+      - name: "terraform"
+        home: "/terraform-1.2.4"
+        properties:
+          - installSource:
+              installers:
+                - terraformInstaller:
+                    id: "1.2.4-linux-amd64"
 credentials:
   system:
     domainCredentials:
       - credentials:
-        - string:
-            scope: GLOBAL
-            id: "secret-text"
-            secret: "SECRET_TEXT"
-            description: "Secret Text"
-        - aws:
-            scope: GLOBAL
-            id: "vlad-terraform-user"
-            accessKey: "AWS_ACCESS_KEY"
-            secretKey: "AWS_SECRET_ACCESS_KEY"
-            description: "AWS Credentials"
         - aws:
             scope: GLOBAL
             description: "jenkins-ecr-role"
             iamRoleArn: "arn:aws:iam::507676015690:role/hillel/jenkins-ecr-iam-role"
             id: "jenkins-ecr-role"
+        - x509ClientCert:
+            clientCertificate: "${readFile:/certs/client/cert.pem}"
+            clientKeySecret: "${readFile:/certs/client/key.pem}"
+            id: "docker-local-cert"
+            scope: GLOBAL
+            serverCaCertificate: "${readFile:/certs/client/ca.pem}"
